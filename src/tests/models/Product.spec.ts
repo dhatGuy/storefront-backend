@@ -69,4 +69,16 @@ describe("Product Model", () => {
       category: "fruits",
     });
   });
+
+  it("should get the correct product by category", async () => {
+    const result = await store.category("fruits");
+    expect(result).toEqual([
+      {
+        id: 1,
+        name: "Mango",
+        price: 257.99,
+        category: "fruits",
+      },
+    ]);
+  });
 });

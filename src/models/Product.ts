@@ -45,6 +45,7 @@ export default class ProductStore {
     try {
       const sql = `DELETE FROM products WHERE id=($1) RETURNING *`;
       const result = await query(sql, [id]);
+      console.log(result.rows[0]);
       return result.rows[0];
     } catch (error) {
       throw new Error(`Unable to delete product: ${error}`);
@@ -63,6 +64,16 @@ export default class ProductStore {
       return result.rows[0];
     } catch (error) {
       throw new Error(`Unable to update product: ${error}`);
+    }
+  };
+
+  category = async (category: string): Promise<Product[]> => {
+    try {
+      const sql = `SELECT * FROM products WHERE category=($1)`;
+      const result = await query(sql, [category]);
+      return result.rows;
+    } catch (error) {
+      throw new Error(`Unable to fetch products: ${error}`);
     }
   };
 }

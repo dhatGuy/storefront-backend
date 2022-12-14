@@ -64,6 +64,22 @@ describe("/products route", () => {
     expect(result.body.name).toEqual("Apple");
   });
 
+  it("DELETE /:id", async () => {
+    const result = await request(app)
+      .delete("/products/1")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(result.status).toEqual(204);
+    const products = await request(app).get("/products");
+    expect(products.body.length).toEqual(0);
+  });
+
+  it("GET /category/:category", async () => {
+    const result = await request(app).get("/products/category/fruits");
+    expect(result.status).toEqual(200);
+    expect(result.body.length).toEqual(1);
+  });
+
   afterAll(async () => {
     await query("DELETE FROM users");
   });

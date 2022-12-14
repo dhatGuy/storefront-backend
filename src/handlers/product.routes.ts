@@ -29,7 +29,6 @@ const create = async (req: Request, res: Response) => {
     const newProduct = await store.create(req.body);
     res.status(201).json(newProduct);
   } catch (error) {
-    console.log(error);
     res.status(400).json(error);
   }
 };
@@ -45,14 +44,24 @@ const update = async (req: Request, res: Response) => {
 
 const destroy = async (req: Request, res: Response) => {
   try {
-    await store.delete(Number(req.params.id));
-    res.status(204);
+    const product = await store.delete(Number(req.params.id));
+    res.status(204).json(product);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+const category = async (req: Request, res: Response) => {
+  try {
+    const products = await store.category(req.params.category);
+    res.json(products);
   } catch (error) {
     res.status(400).json(error);
   }
 };
 
 router.get("/", index);
+router.get("/category/:category", category);
 router.get("/:id", show);
 
 router.post("/", verifyToken, create);
