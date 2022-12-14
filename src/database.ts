@@ -13,10 +13,11 @@ const pool = new Pool({
   user: process.env.PG_USER,
 });
 
-export const query = async (text: string, params?: never) => {
+export const query = async (text: string, params?: unknown[]) => {
   const start = Date.now();
   const res = await pool.query(text, params);
   const duration = Date.now() - start;
-  console.log("executed query", { text, duration, rows: res.rowCount });
+  !isTest &&
+    console.log("executed query", { text, duration, rows: res.rowCount });
   return res;
 };
