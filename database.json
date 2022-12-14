@@ -1,0 +1,19 @@
+{
+  "dev": {
+    "driver": "pg",
+    "host": "127.0.0.1",
+    "database": "full_stack_dev",
+    "user": "full_stack_user",
+    "password": "password123",
+    "port": 6542
+  },
+  "test": {
+    "driver": "pg",
+    "host": "127.0.0.1",
+    "database": "full_stack_dev_test",
+    "user": "full_stack_user",
+    "password": "password123",
+    "port": 6542
+  },
+  "sql-file": true
+}
