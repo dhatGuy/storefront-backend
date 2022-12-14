@@ -21,9 +21,12 @@ const user2 = {
 
 let token: string;
 
-describe("GET /users", () => {
+let id: number;
+
+describe("/users route", () => {
   beforeAll(async () => {
-    await store.create(user);
+    const authUser = await store.create(user);
+    id = authUser.id as number;
   });
 
   afterAll(async () => {
@@ -52,7 +55,7 @@ describe("GET /users", () => {
 
   it("GET /:id", async () => {
     const result = await request(app)
-      .get("/users/1")
+      .get(`/users/${id}`)
       .set("Authorization", `Bearer ${token}`);
 
     expect(result.status).toEqual(200);

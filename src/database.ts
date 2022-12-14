@@ -1,9 +1,14 @@
 import { config } from "dotenv";
-import { Pool } from "pg";
+import { Pool, types } from "pg";
 
 config();
 
 const isTest = process.env.NODE_ENV === "test";
+
+// Parse numeric values as floats instead of strings
+types.setTypeParser(1700, function (val) {
+  return parseFloat(val);
+});
 
 const pool = new Pool({
   database: isTest ? process.env.PG_DB_TEST : process.env.PG_DB,
