@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import verifyToken from "../middlewares/verifyToken";
+import verifyToken, { CustomRequest } from "../middlewares/verifyToken";
 import { OrderStore } from "../models/Order";
 
 const store = new OrderStore();
@@ -66,12 +66,43 @@ const addProduct = async (req: Request, res: Response) => {
   }
 };
 
+const getProducts = async (req: Request, res: Response) => {
+  try {
+    const products = await store.getProducts(parseInt(req.params.id));
+    res.json(products);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+const currentOrder = async (req: CustomRequest, res: Response) => {
+  try {
+    const order = await store.currentOrder(req.user?.id as number);
+    res.json(order);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
+const completedOrders = async (req: CustomRequest, res: Response) => {
+  try {
+    const orders = await store.completedOrders(req.user?.id as number);
+    res.json(orders);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
+
 router.use(verifyToken);
 
 router.route("/").get(index).post(create);
 
+router.route("/current").get(currentOrder);
+
+router.route("/complete").get(completedOrders);
+
 router.route("/:id").get(show).put(update).delete(destroy);
 
-router.route("/:id/products").post(addProduct);
+router.route("/:id/products").post(addProduct).get(getProducts);
 
 export default router;

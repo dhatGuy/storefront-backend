@@ -4,7 +4,7 @@ import { UserWithId } from "../models/User";
 
 // extend the Request interface
 export interface CustomRequest extends Request {
-  user: UserWithId;
+  user?: UserWithId;
 }
 
 export default (req: CustomRequest, res: Response, next: NextFunction) => {

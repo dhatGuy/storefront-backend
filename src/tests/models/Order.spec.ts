@@ -99,8 +99,51 @@ describe("Order Model", () => {
     });
   });
 
-  // afterAll(async () => {
-  //   await query("DELETE FROM users");
-  //   await query(`ALTER SEQUENCE "users_id_seq" RESTART WITH 1`);
-  // });
+  it("addProduct method should throw error if order is not active", async () => {
+    await query(`DELETE FROM products`);
+    await query(
+      `INSERT INTO products (id, name, price, category) VALUES (1, 'test', 1, 'test')`
+    );
+    await query(`UPDATE orders SET status = 'complete' WHERE id = 1`);
+
+    expectAsync(store.addProduct(1, 1, 1)).toBeRejected();
+  });
+
+  it("currentOrders method should return the current order", async () => {
+    const result = await store.currentOrder(userId);
+    expect(result).toEqual({
+      id: 1,
+      user_id: 1,
+      status: "active",
+    });
+  });
+
+  it("completedOrders method should return the completed orders", async () => {
+    await query(`UPDATE orders SET status = 'complete' WHERE id = 1`);
+
+    const result = await store.completedOrders(userId);
+    expect(result).toEqual([
+      {
+        id: 1,
+        user_id: 1,
+        status: "complete",
+      },
+    ]);
+  });
+
+  it("getProducts method should return the products in the order", async () => {
+    await query(`DELETE FROM products`);
+    await query(
+      `INSERT INTO products (id, name, price, category) VALUES (1, 'test', 1, 'test'), (2, 'test2', 2, 'test2')`
+    );
+    await query(
+      `INSERT INTO orders_products (order_id, product_id, quantity) VALUES (1, 1, 1), (1, 2, 2)`
+    );
+
+    const result = await store.getProducts(1);
+    expect(result).toEqual([
+      { id: 1, name: "test", price: 1, category: "test" },
+      { id: 2, name: "test2", price: 2, category: "test2" },
+    ]);
+  });
 });

@@ -1,10 +1,10 @@
 import request from "supertest";
 import app from "../../app";
 import { query } from "../../database";
-import UserStore, { User } from "../../models/User";
+import UserStore, { UserWithId } from "../../models/User";
 import { resetTables } from "../../utils/resetTables";
 
-let authedUser: User;
+let authedUser: UserWithId;
 let token: string;
 
 describe("/orders route", () => {
@@ -38,6 +38,7 @@ describe("/orders route", () => {
 
   afterEach(async () => {
     await query("DELETE FROM orders");
+    await query("DELETE FROM products");
   });
 
   it("GET /", async () => {
@@ -109,8 +110,39 @@ describe("/orders route", () => {
     expect(result.status).toEqual(200);
     expect(result.body.quantity).toEqual(2);
   });
-});
 
-afterAll(async () => {
-  // await resetTables();
+  it("GET /:id/products", async () => {
+    await query(
+      `INSERT INTO products (id, name, price, category) VALUES (1, 'Mango', 257.99, 'fruits')`
+    );
+
+    await query(
+      `INSERT INTO orders_products (order_id, product_id, quantity) VALUES (1, 1, 2)`
+    );
+
+    const result = await request(app)
+      .get("/orders/1/products")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(result.status).toEqual(200);
+    expect(result.body.length).toEqual(1);
+  });
+
+  it("GET /current", async () => {
+    const result = await request(app)
+      .get("/orders/current")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(result.status).toEqual(200);
+    expect(result.body).toEqual({ id: 1, user_id: 1, status: "active" });
+  });
+
+  it("GET /complete", async () => {
+    const result = await request(app)
+      .get("/orders/complete")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(result.status).toEqual(200);
+    expect(result.body).toEqual([]);
+  });
 });
