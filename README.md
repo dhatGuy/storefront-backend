@@ -2,6 +2,10 @@
 
 An API for a storefront application. This project is a part of the [Udacity Full Stack Nanodegree](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044).
 
+## Requirements
+
+[REQUIREMENTS.md](REQUIREMENTS.md)
+
 ## Tech Stack
 
 - Postgres for the database
