@@ -22,7 +22,7 @@ The company stakeholders want to create an online storefront to showcase their g
 | /products/:id                | GET    |  ❌   | Get a single product by id   |
 | /products/:id                | PUT    |  ✔️   | Update a product             |
 | /products/:id                | DELETE |  ✔️   | Delete a product             |
-| /products/category/:category | GET    |  ✔️   | Get all products by category |
+| /products/category/:category | GET    |  ❌   | Get all products by category |
 
 ### Orders Endpoint
 
