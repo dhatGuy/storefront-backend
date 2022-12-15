@@ -44,7 +44,7 @@ const authenticate = async (req: Request, res: Response) => {
       return res.status(401).json("Invalid credentials");
     }
 
-    const token = jwt.sign(user, process.env.TOKEN_SECRET as jwt.Secret, {
+    const token = jwt.sign({ user }, process.env.TOKEN_SECRET as jwt.Secret, {
       expiresIn: "4h",
     });
 

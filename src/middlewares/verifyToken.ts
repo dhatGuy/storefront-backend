@@ -1,19 +1,24 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { User } from "../models/User";
+import { UserWithId } from "../models/User";
 
 // extend the Request interface
-export interface RequestWithUser extends Request {
-  user?: User;
+export interface CustomRequest extends Request {
+  user: UserWithId;
 }
 
-export default (req: RequestWithUser, res: Response, next: NextFunction) => {
+export default (req: CustomRequest, res: Response, next: NextFunction) => {
   const token = req.header("authorization")?.split(" ")[1];
   if (!token) return res.status(401).send("Auth required");
 
   try {
-    const verified = jwt.verify(token, process.env.TOKEN_SECRET as string);
-    req.user = verified as User;
+    const verified = jwt.verify(token, process.env.TOKEN_SECRET as string) as {
+      user: UserWithId;
+      iat: number;
+      exp: number;
+    };
+
+    req.user = verified.user;
     next();
   } catch (error) {
     error instanceof jwt.JsonWebTokenError

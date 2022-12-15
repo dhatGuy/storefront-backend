@@ -3,10 +3,13 @@ import bcrypt from "bcrypt";
 import { query } from "../database";
 
 export type User = {
-  id?: number;
   firstName: string;
   lastName: string;
   username: string;
+};
+
+export type UserWithId = User & {
+  id: number;
 };
 
 export type UserWithPassword = User & {
@@ -16,7 +19,7 @@ export type UserWithPassword = User & {
 const { BCRYPT_PASSWORD: pepper, SALT_ROUNDS: saltRounds } = process.env;
 
 export default class UserStore {
-  index = async (): Promise<User[]> => {
+  index = async (): Promise<UserWithId[]> => {
     try {
       const result = await query(
         `SELECT id, username, "firstName", "lastName" FROM users`
@@ -27,7 +30,7 @@ export default class UserStore {
     }
   };
 
-  show = async (id: number): Promise<User> => {
+  show = async (id: number): Promise<UserWithId> => {
     try {
       const result = await query(
         `SELECT id, "firstName", "lastName" FROM users WHERE id=($1)`,
@@ -39,7 +42,7 @@ export default class UserStore {
     }
   };
 
-  create = async (user: UserWithPassword): Promise<User> => {
+  create = async (user: UserWithPassword): Promise<UserWithId> => {
     const sql = `SELECT * FROM users WHERE username=($1)`;
     const result = await query(sql, [user.username]);
     if (result.rows.length) {
@@ -71,7 +74,7 @@ export default class UserStore {
   authenticate = async (
     username: string,
     password: string
-  ): Promise<User | null> => {
+  ): Promise<UserWithId | null> => {
     try {
       const sql = `SELECT * FROM users WHERE username=($1)`;
       const result = await query(sql, [username]);
