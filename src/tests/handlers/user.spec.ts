@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../../app";
-import { query } from "../../database";
 import UserStore from "../../models/User";
+import { resetTables } from "../../utils/resetTables";
 
 const store = new UserStore();
 
@@ -21,16 +21,9 @@ const user2 = {
 
 let token: string;
 
-let id: number;
-
 describe("/users route", () => {
   beforeAll(async () => {
-    const authUser = await store.create(user);
-    id = authUser.id as number;
-  });
-
-  afterAll(async () => {
-    await query(`DELETE FROM users`);
+    await store.create(user);
   });
 
   it("POST /authenticate", async () => {
@@ -55,7 +48,7 @@ describe("/users route", () => {
 
   it("GET /:id", async () => {
     const result = await request(app)
-      .get(`/users/${id}`)
+      .get(`/users/1`)
       .set("Authorization", `Bearer ${token}`);
 
     expect(result.status).toEqual(200);
@@ -67,5 +60,9 @@ describe("/users route", () => {
 
     expect(result.status).toEqual(201);
     expect(result.body.firstName).toEqual("Jane");
+  });
+
+  afterAll(async () => {
+    await resetTables();
   });
 });

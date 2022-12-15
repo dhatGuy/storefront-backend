@@ -45,7 +45,6 @@ export default class ProductStore {
     try {
       const sql = `DELETE FROM products WHERE id=($1) RETURNING *`;
       const result = await query(sql, [id]);
-      console.log(result.rows[0]);
       return result.rows[0];
     } catch (error) {
       throw new Error(`Unable to delete product: ${error}`);

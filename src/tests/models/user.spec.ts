@@ -1,9 +1,14 @@
 import { query } from "../../database";
 import UserStore from "../../models/User";
+import { resetTables } from "../../utils/resetTables";
 
 const store = new UserStore();
 
 describe("User Model", () => {
+  beforeAll(async () => {
+    await resetTables();
+  });
+
   beforeEach(async () => {
     await query(
       `INSERT INTO users (id, "firstName", "lastName", password_digest, username) VALUES (1,'John', 'Doe', 'password', 'john')`
@@ -30,6 +35,7 @@ describe("User Model", () => {
   });
 
   it("should create a user", async () => {
+    await query("DELETE FROM users");
     expect(store.create).toBeDefined();
 
     const result = await store.create({
@@ -52,4 +58,6 @@ describe("User Model", () => {
       })
     ).toBeRejected();
   });
+
+  afterAll(async () => await resetTables());
 });

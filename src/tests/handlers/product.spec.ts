@@ -1,39 +1,39 @@
-import { default as request, default as supertest } from "supertest";
+import request from "supertest";
 import app from "../../app";
 import { query } from "../../database";
 import UserStore from "../../models/User";
+import { resetTables } from "../../utils/resetTables";
 
 let token: string;
 
-describe("/products route", () => {
-  beforeAll(async () => {
-    const store = new UserStore();
+beforeAll(async () => {
+  await resetTables();
 
-    const user = {
-      firstName: "John",
-      lastName: "Doe",
-      username: "john",
-      password: "password",
-    };
+  const store = new UserStore();
 
-    await store.create(user);
+  const user = {
+    firstName: "John",
+    lastName: "Doe",
+    username: "john",
+    password: "password",
+  };
 
-    const res = await supertest(app).post("/users/authenticate").send({
-      username: "john",
-      password: "password",
-    });
+  await store.create(user);
 
-    token = res.body.token;
+  const res = await request(app).post("/users/authenticate").send({
+    username: "john",
+    password: "password",
   });
 
+  token = res.body.token;
+});
+
+describe("/products route", () => {
   beforeEach(async () => {
+    await query("DELETE FROM products");
     await query(
       `INSERT INTO products (id, name, price, category) VALUES (1, 'Mango', 257.99, 'fruits')`
     );
-  });
-
-  afterEach(async () => {
-    await query("DELETE FROM products");
   });
 
   it("GET /", async () => {
@@ -81,6 +81,6 @@ describe("/products route", () => {
   });
 
   afterAll(async () => {
-    await query("DELETE FROM users");
+    await resetTables();
   });
 });

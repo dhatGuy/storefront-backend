@@ -1,9 +1,14 @@
 import { query } from "../../database";
 import ProductStore from "../../models/Product";
+import { resetTables } from "../../utils/resetTables";
 
 const store = new ProductStore();
 
 describe("Product Model", () => {
+  beforeAll(async () => {
+    await resetTables();
+  });
+
   beforeEach(async () => {
     await query(
       `INSERT INTO products (id, name, price, category) VALUES (1, 'Mango', 257.99, 'fruits')`
